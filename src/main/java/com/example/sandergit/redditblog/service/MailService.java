@@ -1,7 +1,7 @@
 package com.example.sandergit.redditblog.service;
 
 import com.example.sandergit.redditblog.exceptions.SpringRedditException;
-import com.example.sandergit.redditblog.model.NotificationEmail;
+import com.example.sandergit.redditblog.dto.NotificationEmailDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -17,23 +17,23 @@ import org.springframework.stereotype.Service;
 public class MailService {
 
     private final JavaMailSender mailSender;
-    private final MailContentBuilder mailContentBuilder;
+    private final MailContentService mailContentService;
 
     @Async
-    void sendMail(NotificationEmail notificationEmail) {
+    void sendMail(NotificationEmailDto notificationEmailDto) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setFrom("springreddit@email.com");
-            messageHelper.setTo(notificationEmail.getRecipient());
-            messageHelper.setSubject(notificationEmail.getSubject());
-            messageHelper.setText(notificationEmail.getBody());
+            messageHelper.setTo(notificationEmailDto.getRecipient());
+            messageHelper.setSubject(notificationEmailDto.getSubject());
+            messageHelper.setText(notificationEmailDto.getBody());
         };
         try {
             mailSender.send(messagePreparator);
             log.info("Activation email sent!!");
         } catch (MailException e) {
             log.error("Exception occurred when sending mail", e);
-            throw new SpringRedditException("Exception occurred when sending mail to " + notificationEmail.getRecipient());
+            throw new SpringRedditException("Exception occurred when sending mail to " + notificationEmailDto.getRecipient());
         }
     }
 

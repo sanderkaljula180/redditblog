@@ -1,6 +1,7 @@
 package com.example.sandergit.redditblog.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -18,6 +20,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -30,5 +33,7 @@ public class User {
     @NotEmpty(message = "Email is required")
     private String email;
     private Instant created;
-    private boolean enabled;
+
+    @NotNull
+    private boolean enabled = true;
 }

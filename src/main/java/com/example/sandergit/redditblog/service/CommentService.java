@@ -4,7 +4,7 @@ import com.example.sandergit.redditblog.dto.CommentsDto;
 import com.example.sandergit.redditblog.exceptions.PostNotFoundException;
 import com.example.sandergit.redditblog.mapper.CommentMapper;
 import com.example.sandergit.redditblog.model.Comment;
-import com.example.sandergit.redditblog.model.NotificationEmail;
+import com.example.sandergit.redditblog.dto.NotificationEmailDto;
 import com.example.sandergit.redditblog.model.Post;
 import com.example.sandergit.redditblog.model.User;
 import com.example.sandergit.redditblog.repository.CommentRepository;
@@ -24,24 +24,24 @@ public class CommentService {
     private static final String POST_URL = "";
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final AuthService authService;
+    private final UserService userService;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
-    private final MailContentBuilder mailContentBuilder;
+    private final MailContentService mailContentService;
     private final MailService mailService;
 
     public void save(CommentsDto commentsDto) {
         Post post = postRepository.findById(commentsDto.getPostId())
                 .orElseThrow(() -> new PostNotFoundException(commentsDto.getPostId().toString()));
-        Comment comment = commentMapper.map(commentsDto, post, authService.getCurrentUser());
+        Comment comment = commentMapper.map(commentsDto, post, userService.getCurrentUser());
         commentRepository.save(comment);
 
-        String message = mailContentBuilder.build(post.getUser().getUsername() + " posted a comment on your post." + POST_URL);
+        String message = mailContentService.build(post.getUser().getUsername() + " posted a comment on your post." + POST_URL);
         sendCommentNotification(message, post.getUser());
     }
 
     private void sendCommentNotification(String message, User user) {
-        mailService.sendMail(new NotificationEmail(user.getUsername() + " Commented on your post", user.getEmail(), message));
+        mailService.sendMail(new NotificationEmailDto(user.getUsername() + " Commented on your post", user.getEmail(), message));
     }
 
     public List<CommentsDto> getAllCommentsForPost(Long postId) {

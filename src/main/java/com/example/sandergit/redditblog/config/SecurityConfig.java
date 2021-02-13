@@ -28,26 +28,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors().and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/auth/**")
-                .permitAll()
-                .antMatchers("/api/subreddit")
-                .permitAll()
-                .antMatchers("/api/posts")
-                .permitAll()
-                .antMatchers("/api/posts/**")
-                .permitAll()
                 .antMatchers("/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
                         "/configuration/security",
                         "/swagger-ui.html",
-                        "/webjars/**")
+                        "/webjars/**",
+                        "/api/auth/**",
+                        "/api/subreddit",
+                        "/api/posts",
+                        "/api/posts/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated();

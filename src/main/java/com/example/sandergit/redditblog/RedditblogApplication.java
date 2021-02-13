@@ -1,6 +1,6 @@
 package com.example.sandergit.redditblog;
 
-import com.example.sandergit.redditblog.config.SwaggerConfiguration;
+import com.example.sandergit.redditblog.config.SwaggerConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-@Import(SwaggerConfiguration.class)
+@Import(SwaggerConfig.class)
 public class RedditblogApplication {
 
 	public static void main(String[] args) {

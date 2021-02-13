@@ -1,7 +1,7 @@
 package com.example.sandergit.redditblog.service;
 
-import com.example.sandergit.redditblog.dto.PostRequest;
-import com.example.sandergit.redditblog.dto.PostResponse;
+import com.example.sandergit.redditblog.dto.PostRequestDto;
+import com.example.sandergit.redditblog.dto.PostResponseDto;
 import com.example.sandergit.redditblog.exceptions.PostNotFoundException;
 import com.example.sandergit.redditblog.exceptions.SubredditNotFoundException;
 import com.example.sandergit.redditblog.mapper.PostMapper;
@@ -30,25 +30,25 @@ public class PostService {
     private final PostRepository postRepository;
     private final SubredditRepository subredditRepository;
     private final UserRepository userRepository;
-    private final AuthService authService;
+    private final UserService userService;
     private final PostMapper postMapper;
 
-    public void save(PostRequest postRequest) {
-        Subreddit subreddit = subredditRepository.findByName(postRequest.getSubredditName())
-                .orElseThrow(() -> new SubredditNotFoundException(postRequest.getSubredditName()));
-        Post post = postMapper.map(postRequest, subreddit, authService.getCurrentUser());
+    public void save(PostRequestDto postRequestDto) {
+        Subreddit subreddit = subredditRepository.findByName(postRequestDto.getSubredditName())
+                .orElseThrow(() -> new SubredditNotFoundException(postRequestDto.getSubredditName()));
+        Post post = postMapper.map(postRequestDto, subreddit, userService.getCurrentUser());
         postRepository.save(post);
     }
 
     @Transactional(readOnly = true)
-    public PostResponse getPost(Long id) {
+    public PostResponseDto getPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new PostNotFoundException(id.toString()));
         return postMapper.mapToDto(post);
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getAllPosts() {
+    public List<PostResponseDto> getAllPosts() {
         return postRepository.findAll()
                 .stream()
                 .map(postMapper::mapToDto)
@@ -56,7 +56,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPostsBySubreddit(Long subredditId) {
+    public List<PostResponseDto> getPostsBySubreddit(Long subredditId) {
         Subreddit subreddit = subredditRepository.findById(subredditId)
                 .orElseThrow(() -> new SubredditNotFoundException(subredditId.toString()));
         List<Post> posts = postRepository.findAllBySubreddit(subreddit);
@@ -64,7 +64,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostResponse> getPostsByUsername(String username) {
+    public List<PostResponseDto> getPostsByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
         return postRepository.findByUser(user)
